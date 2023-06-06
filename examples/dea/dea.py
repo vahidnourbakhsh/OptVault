@@ -1,5 +1,4 @@
-from pyomo.environ import *
-infinity = float('inf')
+from pyomo.environ import AbstractModel, Set, Param, Var, Objective, Constraint, PositiveReals, NonNegativeReals, Binary, maximize, inequality, SolverFactory
 
 model = AbstractModel()
 # Sets
