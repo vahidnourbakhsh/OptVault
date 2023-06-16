@@ -95,8 +95,61 @@ def _input_oriented_model():
     return model
 
 
+def _output_oriented_model():
+    """ Output oriented DEA model
+    """    
+    model = AbstractModel()
+
+    # Sets
+    model.Inputs = Set()
+    model.Outputs = Set()
+    model.Units = Set()
+
+    # Parameters
+    model.invalues = Param(model.Inputs, model.Units, within=PositiveReals)
+    model.outvalues = Param(model.Outputs, model.Units, within=PositiveReals)
+    model.target = Param(model.Units, within=Binary)
+
+    # Decision vars
+    model.theta = Var(within=NonNegativeReals)
+    model.lmbda = Var(model.Units, within=NonNegativeReals)
+
+    # Objective
+    def theta_rule(model):
+        return model.theta
+    model.efficiency = Objective(rule=theta_rule, sense=maximize)
+
+    # Constraints
+    def input_rule_value(model, input):
+        value = sum(model.lmbda[unit] * model.invalues[input, unit] for unit in model.Units) - sum(model.target[unit] * model.invalues[input, unit] for unit in model.Units)
+        return value
+
+    def input_rule(model, input):
+        value = input_rule_value(model, input)
+        return inequality(body=value, upper=0)
+    model.input_cons = Constraint(model.Inputs, rule=input_rule)
+
+    def output_rule_value(model, output):
+        value = sum(model.lmbda[unit] * model.outvalues[output, unit] for unit in model.Units) - sum(model.theta * model.target[unit] * model.outvalues[output, unit] for unit in model.Units)
+        return value
+
+    def output_rule(model, output):
+        value = output_rule_value(model, output)
+        return inequality(body=value, lower=0)
+    model.output_cons = Constraint(model.Outputs, rule=output_rule)
+
+    model.input_rule_value = input_rule_value
+    model.output_rule_value = output_rule_value
+
+    def convex_combination_rule(model):
+        return sum(model.lmbda[unit] for unit in model.Units) == 1
+    model.convex_combination_cons = Constraint(rule=convex_combination_rule)
+
+    return model
+
+
 class DEAProgram:
-    MODELS = {"primal": _primal_model(), "input_oriented": _input_oriented_model(), "output_oriented": None}
+    MODELS = {"primal": _primal_model(), "input_oriented": _input_oriented_model(), "output_oriented": _output_oriented_model()}
 
     def __init__(self, model_type="primal") -> None:
         self.model_type = model_type
