@@ -17,8 +17,8 @@ def _primal_model():
     model.Units = Set()
 
     # Parameters
-    model.invalues = Param(model.Inputs, model.Units, within=PositiveReals)
-    model.outvalues = Param(model.Outputs, model.Units, within=PositiveReals)
+    model.invalues = Param(model.Inputs, model.Units, within=NonNegativeReals)
+    model.outvalues = Param(model.Outputs, model.Units, within=NonNegativeReals)
     model.target = Param(model.Units, within=Binary)
 
     # Decision vars
@@ -56,8 +56,8 @@ def _input_oriented_model():
     model.Units = Set()
 
     # Parameters
-    model.invalues = Param(model.Inputs, model.Units, within=PositiveReals)
-    model.outvalues = Param(model.Outputs, model.Units, within=PositiveReals)
+    model.invalues = Param(model.Inputs, model.Units, within=NonNegativeReals)
+    model.outvalues = Param(model.Outputs, model.Units, within=NonNegativeReals)
     model.target = Param(model.Units, within=Binary)
 
     # Decision vars
@@ -106,8 +106,8 @@ def _output_oriented_model():
     model.Units = Set()
 
     # Parameters
-    model.invalues = Param(model.Inputs, model.Units, within=PositiveReals)
-    model.outvalues = Param(model.Outputs, model.Units, within=PositiveReals)
+    model.invalues = Param(model.Inputs, model.Units, within=NonNegativeReals)
+    model.outvalues = Param(model.Outputs, model.Units, within=NonNegativeReals)
     model.target = Param(model.Units, within=Binary)
 
     # Decision vars
