@@ -91,6 +91,10 @@ def _input_oriented_model():
         return value == 0
     model.output_cons = Constraint(model.Outputs, rule=output_rule)
 
+    def convex_combination_rule(model):
+        return sum(model.lmbda[unit] for unit in model.Units) == 1
+    model.convex_combination_cons = Constraint(rule=convex_combination_rule)
+    
     return model
 
 
@@ -160,12 +164,12 @@ class DEAProgram:
     def _create_abstract_model(self, model_type="primal") -> AbstractModel:
         return self.MODELS[model_type]
 
-    def get_slacks(self, instance, data):
+    def get_slacks(self, instance):
         constraint_status = pd.DataFrame(columns=['slack'])
-        for input_feature in data[None]["Inputs"][None]:
+        for input_feature in instance.Inputs:
             slack = instance.input_slack[input_feature]()
             constraint_status.loc[input_feature] = [slack]
-        for output_feature in data[None]["Outputs"][None]:
+        for output_feature in instance.Outputs:
             slack = instance.output_slack[output_feature]()
             constraint_status.loc[output_feature] = [slack]
         return constraint_status
