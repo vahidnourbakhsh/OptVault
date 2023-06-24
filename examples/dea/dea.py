@@ -5,10 +5,8 @@ from pyomo.environ import NonNegativeReals, Binary, Reals, AbstractModel, Set, P
 
 
 def _primal_model():
-    """ Primal formulation of the DEA model
+    """Primal formulation of the DEA model. This model calculates efficiency of a given DMU.
     """
-    TOLERANCE = 0.01 # feasibility tolerance for the normalization constraint below
-
     model = AbstractModel()
 
     # Sets
@@ -38,8 +36,7 @@ def _primal_model():
     model.ratio = Constraint(model.Units, rule=ratio_rule)
 
     def normalization_rule(model):
-        value = sum(model.invalues[i, unit]*model.target[unit]*model.v[i] for unit in model.Units for i in model.Inputs)
-        return inequality(body=value, lower=1-TOLERANCE, upper=1 + TOLERANCE)
+        return sum(model.invalues[i, unit]*model.target[unit]*model.v[i] for unit in model.Units for i in model.Inputs) == 1
     model.normalization = Constraint(rule=normalization_rule)
 
     return model
