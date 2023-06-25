@@ -5,9 +5,9 @@ set Outputs:= 200 201;
 set Units:= 1 2 3;
 
 param: Units:      target:=
-1               1
+1               0
 2               0
-3               0;
+3               1;
 
 param invalues: 
         1   2   3:=
