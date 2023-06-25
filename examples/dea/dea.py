@@ -1,11 +1,11 @@
-"""DEA math program class for defining the desired DEA model including `primal`, `input_oriented`, and `output_oriented`."""
+"""DEA math program class for defining the desired DEA model including CCR and VRS models"""
 
 import pandas as pd
 from pyomo.environ import NonNegativeReals, Binary, Reals, AbstractModel, Set, Param, Var, Objective, Constraint, maximize, minimize, inequality, SolverFactory
 
 
-def _primal_model():
-    """Primal formulation of the DEA model. This model calculates efficiency of a given DMU.
+def _input_oriented_ccr_model():
+    """Input oriented CCR model. CCR models are Constant Return to Scale (CRS).
     """
     model = AbstractModel()
 
@@ -40,6 +40,152 @@ def _primal_model():
     model.normalization = Constraint(rule=normalization_rule)
 
     return model
+
+
+def _output_oriented_ccr_model():
+    """Output oriented CCR model. CCR models are Constant Return to Scale (CRS).
+    """
+    model = AbstractModel()
+
+    # Sets
+    model.Inputs = Set()
+    model.Outputs = Set()
+    model.Units = Set()
+
+    # Parameters
+    model.invalues = Param(model.Inputs, model.Units, within=NonNegativeReals)
+    model.outvalues = Param(model.Outputs, model.Units, within=NonNegativeReals)
+    model.target = Param(model.Units, within=Binary)
+
+    # Decision vars
+    model.u = Var(model.Outputs, within=NonNegativeReals)
+    model.v = Var(model.Inputs, within=NonNegativeReals)
+
+    # Objective
+    def efficiency_rule(model):
+        return sum(model.invalues[i, unit]*model.target[unit]*model.v[i] for unit in model.Units for i in model.Inputs)
+    model.efficiency = Objective(rule=efficiency_rule, sense=minimize)
+
+
+    # Constraint
+    def ratio_rule(model, unit):
+        value = sum(model.outvalues[j, unit]*model.u[j] for j in model.Outputs) - sum(model.invalues[i, unit]*model.v[i] for i in model.Inputs)
+        return inequality(body=value, upper=0)
+    model.ratio = Constraint(model.Units, rule=ratio_rule)
+
+    def normalization_rule(model):
+        return sum(model.invalues[j, unit]*model.target[unit]*model.u[j] for unit in model.Units for j in model.Outputs) == 1
+    model.normalization = Constraint(rule=normalization_rule)
+
+    return model
+
+
+def _input_oriented_bcc_model():
+    """Input oriented BCC DEA model. BCC models are Variable Return to Scale (VRS).
+    BCC models calculate the envelope that encompasses the target DMU. 
+    They do that by taking a convex combination of all DMUs.
+    """    
+    model = AbstractModel()
+
+    # Sets
+    model.Inputs = Set()
+    model.Outputs = Set()
+    model.Units = Set()
+
+    # Parameters
+    model.invalues = Param(model.Inputs, model.Units, within=NonNegativeReals)
+    model.outvalues = Param(model.Outputs, model.Units, within=NonNegativeReals)
+    model.target = Param(model.Units, within=Binary)
+
+    # Decision vars
+    model.theta = Var(within=NonNegativeReals)
+    model.lmbda = Var(model.Units, within=NonNegativeReals)
+
+    # Objective
+    def theta_rule(model):
+        return model.theta
+    model.efficiency = Objective(rule=theta_rule, sense=minimize)
+
+    # Constraints
+    def input_rule_value(model, input):
+        value = sum(model.lmbda[unit] * model.invalues[input, unit] for unit in model.Units) - sum(model.theta * model.target[unit] * model.invalues[input, unit] for unit in model.Units)
+        return value
+
+    def input_rule(model, input):
+        value = input_rule_value(model, input)
+        return inequality(body=value, upper=0)
+    model.input_cons = Constraint(model.Inputs, rule=input_rule)
+
+
+    def output_rule_value(model, output):
+        value = sum(model.lmbda[unit] * model.outvalues[output, unit] for unit in model.Units) - sum(model.target[unit] * model.outvalues[output, unit] for unit in model.Units)
+        return value
+
+    def output_rule(model, output):
+        value = output_rule_value(model, output)
+        return inequality(body=value, lower=0)
+    model.output_cons = Constraint(model.Outputs, rule=output_rule)
+
+    model.input_rule_value = input_rule_value
+    model.output_rule_value = output_rule_value
+
+    return model
+
+
+def _output_oriented_bcc_model():
+    """Output oriented BCC DEA model. BCC models are Variable Return to Scale (VRS).
+    BCC models calculate the envelope that encompasses the target DMU. 
+    They do that by taking a convex combination of all DMUs.
+    """  
+    model = AbstractModel()
+
+    # Sets
+    model.Inputs = Set()
+    model.Outputs = Set()
+    model.Units = Set()
+
+    # Parameters
+    model.invalues = Param(model.Inputs, model.Units, within=NonNegativeReals)
+    model.outvalues = Param(model.Outputs, model.Units, within=NonNegativeReals)
+    model.target = Param(model.Units, within=Binary)
+
+    # Decision vars
+    model.theta = Var(within=NonNegativeReals)
+    model.lmbda = Var(model.Units, within=NonNegativeReals)
+
+    # Objective
+    def theta_rule(model):
+        return model.theta
+    model.efficiency = Objective(rule=theta_rule, sense=maximize)
+
+    # Constraints
+    def input_rule_value(model, input):
+        value = sum(model.lmbda[unit] * model.invalues[input, unit] for unit in model.Units) - sum(model.target[unit] * model.invalues[input, unit] for unit in model.Units)
+        return value
+
+    def input_rule(model, input):
+        value = input_rule_value(model, input)
+        return inequality(body=value, upper=0)
+    model.input_cons = Constraint(model.Inputs, rule=input_rule)
+
+    def output_rule_value(model, output):
+        value = sum(model.lmbda[unit] * model.outvalues[output, unit] for unit in model.Units) - sum(model.theta * model.target[unit] * model.outvalues[output, unit] for unit in model.Units)
+        return value
+
+    def output_rule(model, output):
+        value = output_rule_value(model, output)
+        return inequality(body=value, lower=0)
+    model.output_cons = Constraint(model.Outputs, rule=output_rule)
+
+    model.input_rule_value = input_rule_value
+    model.output_rule_value = output_rule_value
+
+    def convex_combination_rule(model):
+        return sum(model.lmbda[unit] for unit in model.Units) == 1
+    model.convex_combination_cons = Constraint(rule=convex_combination_rule)
+
+    return model
+
 
 
 def _input_oriented_slack_model():
@@ -99,111 +245,12 @@ def _input_oriented_slack_model():
     return model
 
 
-def _input_oriented_ccr_model():
-    """Input oriented CCR DEA model. This model calculates efficiency of a given DMU.
-    """    
-    model = AbstractModel()
-
-    # Sets
-    model.Inputs = Set()
-    model.Outputs = Set()
-    model.Units = Set()
-
-    # Parameters
-    model.invalues = Param(model.Inputs, model.Units, within=NonNegativeReals)
-    model.outvalues = Param(model.Outputs, model.Units, within=NonNegativeReals)
-    model.target = Param(model.Units, within=Binary)
-
-    # Decision vars
-    model.theta = Var(within=NonNegativeReals)
-    model.lmbda = Var(model.Units, within=NonNegativeReals)
-
-    # Objective
-    def theta_rule(model):
-        return model.theta
-    model.efficiency = Objective(rule=theta_rule, sense=minimize)
-
-    # Constraints
-    def input_rule_value(model, input):
-        value = sum(model.lmbda[unit] * model.invalues[input, unit] for unit in model.Units) - sum(model.theta * model.target[unit] * model.invalues[input, unit] for unit in model.Units)
-        return value
-
-    def input_rule(model, input):
-        value = input_rule_value(model, input)
-        return inequality(body=value, upper=0)
-    model.input_cons = Constraint(model.Inputs, rule=input_rule)
-
-
-    def output_rule_value(model, output):
-        value = sum(model.lmbda[unit] * model.outvalues[output, unit] for unit in model.Units) - sum(model.target[unit] * model.outvalues[output, unit] for unit in model.Units)
-        return value
-
-    def output_rule(model, output):
-        value = output_rule_value(model, output)
-        return inequality(body=value, lower=0)
-    model.output_cons = Constraint(model.Outputs, rule=output_rule)
-
-    model.input_rule_value = input_rule_value
-    model.output_rule_value = output_rule_value
-
-    return model
-
-
-def _output_oriented_ccr_model():
-    """Output oriented CCR DEA model. This model calculates efficiency of a given DMU.
-    """    
-    model = AbstractModel()
-
-    # Sets
-    model.Inputs = Set()
-    model.Outputs = Set()
-    model.Units = Set()
-
-    # Parameters
-    model.invalues = Param(model.Inputs, model.Units, within=NonNegativeReals)
-    model.outvalues = Param(model.Outputs, model.Units, within=NonNegativeReals)
-    model.target = Param(model.Units, within=Binary)
-
-    # Decision vars
-    model.theta = Var(within=NonNegativeReals)
-    model.lmbda = Var(model.Units, within=NonNegativeReals)
-
-    # Objective
-    def theta_rule(model):
-        return model.theta
-    model.efficiency = Objective(rule=theta_rule, sense=maximize)
-
-    # Constraints
-    def input_rule_value(model, input):
-        value = sum(model.lmbda[unit] * model.invalues[input, unit] for unit in model.Units) - sum(model.target[unit] * model.invalues[input, unit] for unit in model.Units)
-        return value
-
-    def input_rule(model, input):
-        value = input_rule_value(model, input)
-        return inequality(body=value, upper=0)
-    model.input_cons = Constraint(model.Inputs, rule=input_rule)
-
-    def output_rule_value(model, output):
-        value = sum(model.lmbda[unit] * model.outvalues[output, unit] for unit in model.Units) - sum(model.theta * model.target[unit] * model.outvalues[output, unit] for unit in model.Units)
-        return value
-
-    def output_rule(model, output):
-        value = output_rule_value(model, output)
-        return inequality(body=value, lower=0)
-    model.output_cons = Constraint(model.Outputs, rule=output_rule)
-
-    model.input_rule_value = input_rule_value
-    model.output_rule_value = output_rule_value
-
-    def convex_combination_rule(model):
-        return sum(model.lmbda[unit] for unit in model.Units) == 1
-    model.convex_combination_cons = Constraint(rule=convex_combination_rule)
-
-    return model
-
-
 class DEAProgram:
-    MODELS = {"primal": _primal_model(), "input_oriented": _input_oriented_ccr_model(), "input_oriented_slack": _input_oriented_slack_model(), "output_oriented": _output_oriented_ccr_model()}
+    MODELS = {"input_oriented_ccr_model": _input_oriented_ccr_model(), 
+    "output_oriented_ccr_model": _output_oriented_ccr_model(), 
+    "input_oriented_bcc_model": _input_oriented_bcc_model(), 
+    "output_oriented_bcc_model": _output_oriented_bcc_model(),
+    "input_oriented_slack_model": _input_oriented_slack_model()}
 
     def __init__(self, model_type="primal") -> None:
         self.model_type = model_type
