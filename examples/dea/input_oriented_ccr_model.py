@@ -3,8 +3,6 @@ In real cases though we usually solve the dual of this model. Look at input-orie
 """
 from pyomo.environ import AbstractModel, Set, Param, Var, Objective, Constraint, PositiveReals, NonNegativeReals, Binary, maximize, minimize, inequality, SolverFactory
 
-TOLERANCE = 0.01 # feasibility tolerance for the normalization constraint below
-
 model = AbstractModel()
 
 # Sets
@@ -13,8 +11,8 @@ model.Outputs = Set()
 model.Units = Set()
 
 # Parameters
-model.invalues = Param(model.Inputs, model.Units, within=PositiveReals)
-model.outvalues = Param(model.Outputs, model.Units, within=PositiveReals)
+model.invalues = Param(model.Inputs, model.Units, within=NonNegativeReals)
+model.outvalues = Param(model.Outputs, model.Units, within=NonNegativeReals)
 model.target = Param(model.Units, within=Binary)
 
 # Decision vars
@@ -34,6 +32,5 @@ def ratio_rule(model, unit):
 model.ratio = Constraint(model.Units, rule=ratio_rule)
 
 def normalization_rule(model):
-    value = sum(model.invalues[i, unit]*model.target[unit]*model.v[i] for unit in model.Units for i in model.Inputs)
-    return inequality(body=value, lower=1-TOLERANCE, upper=1 + TOLERANCE)
+    return sum(model.invalues[i, unit]*model.target[unit]*model.v[i] for unit in model.Units for i in model.Inputs) == 1
 model.normalization = Constraint(rule=normalization_rule)
