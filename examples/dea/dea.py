@@ -74,7 +74,7 @@ def _output_oriented_ccr_model():
     model.ratio = Constraint(model.Units, rule=ratio_rule)
 
     def normalization_rule(model):
-        return sum(model.invalues[j, unit]*model.target[unit]*model.u[j] for unit in model.Units for j in model.Outputs) == 1
+        return sum(model.outvalues[j, unit]*model.target[unit]*model.u[j] for unit in model.Units for j in model.Outputs) == 1
     model.normalization = Constraint(rule=normalization_rule)
 
     return model
@@ -246,13 +246,17 @@ def _input_oriented_slack_model():
 
 
 class DEAProgram:
+    SLACK_MODELS = {
+        "input_oriented_slack_model": _input_oriented_slack_model()
+    }
     MODELS = {"input_oriented_ccr_model": _input_oriented_ccr_model(), 
     "output_oriented_ccr_model": _output_oriented_ccr_model(), 
     "input_oriented_bcc_model": _input_oriented_bcc_model(), 
     "output_oriented_bcc_model": _output_oriented_bcc_model(),
-    "input_oriented_slack_model": _input_oriented_slack_model()}
+    }
+    MODELS.update(SLACK_MODELS)
 
-    def __init__(self, model_type="primal") -> None:
+    def __init__(self, model_type="input_oriented_slack_model") -> None:
         self.model_type = model_type
 
     @property
@@ -263,6 +267,8 @@ class DEAProgram:
         return self.MODELS[model_type]
 
     def get_slacks(self, instance) -> pd.DataFrame:
+        if self.model_type not in self.SLACK_MODELS.keys():
+            raise ValueError(f"Slacks are available in these models: {list(self.SLACK_MODELS.keys())}")
         constraint_status = pd.DataFrame(columns=['slack'])
         for input_feature in instance.Inputs:
             slack = instance.input_slack[input_feature]()
