@@ -1,6 +1,6 @@
 name: check formatting + run tests
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   python-workflow:
