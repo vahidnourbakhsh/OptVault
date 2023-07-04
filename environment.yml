@@ -17,6 +17,7 @@ dependencies:
   - backports.functools_lru_cache=1.6.5
   - beautifulsoup4=4.12.2
   - black=23.3.0
+  - black-jupyter=23.3.0
   - bleach=6.0.0
   - brotli-python=1.0.9
   - ca-certificates=2023.5.7
@@ -118,6 +119,7 @@ dependencies:
   - terminado=0.17.1
   - tinycss2=1.2.1
   - tk=8.6.12
+  - tokenize-rt=5.1.0
   - tomli=2.0.1
   - tornado=6.3.2
   - traitlets=5.9.0
