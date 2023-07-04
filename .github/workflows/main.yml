@@ -23,7 +23,7 @@ jobs:
         conda env update --file environment.yml --name optvault
     - name: Format with Black
       run: |
-        black --check --verbose examples
+        black --check --verbose examples tests
     - name: Test with pytest
       run: |
         pytest tests
