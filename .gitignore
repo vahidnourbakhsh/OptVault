@@ -159,4 +159,15 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# IDEs and editors
+.vscode/
+# Track workspace-specific VSCode settings, tasks, and extensions for team consistency
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
 .DS_Store
