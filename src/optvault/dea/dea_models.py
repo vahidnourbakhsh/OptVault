@@ -49,7 +49,7 @@ def create_dea_model() -> AbstractModel:
     model.u = Var(model.Outputs, within=NonNegativeReals)
     model.v = Var(model.Inputs, within=NonNegativeReals)
 
-    # Objective
+    # Objective: Maximize efficiency of target unit
     def efficiency_rule(model):
         return sum(
             model.outvalues[j, unit] * model.target[unit] * model.u[j]
@@ -59,7 +59,7 @@ def create_dea_model() -> AbstractModel:
 
     model.efficiency = Objective(rule=efficiency_rule, sense=maximize)
 
-    # Constraints
+    # Constraints: For each unit, weighted outputs ≤ weighted inputs
     def ratio_rule(model, unit):
         value = sum(model.outvalues[j, unit] * model.u[j] for j in model.Outputs) - sum(
             model.invalues[i, unit] * model.v[i] for i in model.Inputs
@@ -68,6 +68,7 @@ def create_dea_model() -> AbstractModel:
 
     model.ratio = Constraint(model.Units, rule=ratio_rule)
 
+    # Normalization constraint: weighted inputs of target unit = 1
     def normalization_rule(model):
         value = sum(
             model.invalues[i, unit] * model.target[unit] * model.v[i]
@@ -137,26 +138,26 @@ class DEAAnalyzer:
         model = create_dea_model()
 
         # Create data dictionary for the model
-        data = {
-            "Inputs": list(input_data.index),
-            "Outputs": list(output_data.index),
-            "Units": unit_names,
-        }
+        data = {None: {
+            "Inputs": {None: list(input_data.index)},
+            "Outputs": {None: list(output_data.index)},
+            "Units": {None: unit_names},
+        }}
 
         # Add input values
-        data["invalues"] = {}
+        data[None]["invalues"] = {}
         for inp in input_data.index:
             for unit in unit_names:
-                data["invalues"][inp, unit] = input_data.loc[inp, unit]
+                data[None]["invalues"][inp, unit] = input_data.loc[inp, unit]
 
         # Add output values
-        data["outvalues"] = {}
+        data[None]["outvalues"] = {}
         for out in output_data.index:
             for unit in unit_names:
-                data["outvalues"][out, unit] = output_data.loc[out, unit]
+                data[None]["outvalues"][out, unit] = output_data.loc[out, unit]
 
-        # Set target unit
-        data["target"] = {unit: 1 if unit == target_unit else 0 for unit in unit_names}
+        # Set target unit (1 for target, 0 for others)
+        data[None]["target"] = {unit: 1 if unit == target_unit else 0 for unit in unit_names}
 
         # Create instance and solve
         instance = model.create_instance(data)
