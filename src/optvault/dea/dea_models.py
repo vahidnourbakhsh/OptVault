@@ -24,6 +24,9 @@ import pandas as pd
 from typing import List
 
 
+__all__ = ["create_dea_model", "DEAAnalyzer", "TOLERANCE"]
+
+
 TOLERANCE = 0.01  # feasibility tolerance for the normalization constraint
 
 
@@ -138,26 +141,26 @@ class DEAAnalyzer:
         model = create_dea_model()
 
         # Create data dictionary for the model
-        data = {None: {
-            "Inputs": {None: list(input_data.index)},
-            "Outputs": {None: list(output_data.index)},
-            "Units": {None: unit_names},
-        }}
+        data = {
+            "Inputs": list(input_data.index),
+            "Outputs": list(output_data.index),
+            "Units": unit_names,
+        }
 
         # Add input values
-        data[None]["invalues"] = {}
+        data["invalues"] = {}
         for inp in input_data.index:
             for unit in unit_names:
-                data[None]["invalues"][inp, unit] = input_data.loc[inp, unit]
+                data["invalues"][inp, unit] = input_data.loc[inp, unit]
 
         # Add output values
-        data[None]["outvalues"] = {}
+        data["outvalues"] = {}
         for out in output_data.index:
             for unit in unit_names:
-                data[None]["outvalues"][out, unit] = output_data.loc[out, unit]
+                data["outvalues"][out, unit] = output_data.loc[out, unit]
 
         # Set target unit (1 for target, 0 for others)
-        data[None]["target"] = {unit: 1 if unit == target_unit else 0 for unit in unit_names}
+        data["target"] = {unit: 1 if unit == target_unit else 0 for unit in unit_names}
 
         # Create instance and solve
         instance = model.create_instance(data)
@@ -169,6 +172,3 @@ class DEAAnalyzer:
             raise RuntimeError(
                 f"Solver failed for unit {target_unit}: {results.solver.termination_condition}"
             )
-
-
-__all__ = ["create_dea_model", "DEAAnalyzer", "TOLERANCE"]

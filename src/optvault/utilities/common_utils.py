@@ -6,6 +6,16 @@ from typing import List, Dict, Any, Union, Optional
 import logging
 
 
+__all__ = [
+    "setup_logging",
+    "validate_data",
+    "load_data_from_file",
+    "save_results",
+    "calculate_summary_stats",
+    "normalize_data",
+]
+
+
 def setup_logging(level: str = "INFO") -> None:
     """Set up logging configuration.
 
@@ -153,13 +163,3 @@ def normalize_data(
             raise ValueError(f"Unknown normalization method: {method}")
 
     return df
-
-
-__all__ = [
-    "setup_logging",
-    "validate_data",
-    "load_data_from_file",
-    "save_results",
-    "calculate_summary_stats",
-    "normalize_data",
-]
