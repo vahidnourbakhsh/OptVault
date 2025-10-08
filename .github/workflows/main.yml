@@ -1,29 +1,44 @@
 name: check formatting + run tests
 
-on: [push, workflow_dispatch]
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   python-workflow:
     runs-on: ubuntu-latest
     strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
       max-parallel: 5
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v3
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.9'
+        python-version: ${{ matrix.python-version }}
+        
     - name: Add conda to system path
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
+        
     - name: Install dependencies
       run: |
-        conda env update --file environment.yml --name optvault
-    - name: Format with Black
+        conda env update --file environment.yml --name base
+        
+    - name: Install package
       run: |
-        black --check --verbose examples tests
+        conda run -n base pip install -e ".[dev]"
+        
+    - name: Format check with Black
+      run: |
+        conda run -n base black --check --verbose src/ tests/ examples/
+        
     - name: Test with pytest
       run: |
-        pytest tests
+        conda run -n base pytest tests/ -v --tb=short
+        
+    - name: Check package installation
+      run: |
+        conda run -n base python -c "import optvault; print('OptVault version:', optvault.__version__)"
