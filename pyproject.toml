@@ -54,10 +54,10 @@ solvers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/your-username/OptVault"
-"Bug Reports" = "https://github.com/your-username/OptVault/issues"
-"Source" = "https://github.com/your-username/OptVault"
-"Documentation" = "https://github.com/your-username/OptVault"
+"Homepage" = "https://github.com/vahidnourbakhsh/OptVault"
+"Bug Reports" = "https://github.com/vahidnourbakhsh/OptVault/issues"
+"Source" = "https://github.com/vahidnourbakhsh/OptVault"
+"Documentation" = "https://github.com/vahidnourbakhsh/OptVault"
 
 [tool.setuptools.packages.find]
 where = ["src"]

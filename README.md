@@ -1,6 +1,10 @@
 # OptVault
 
-[![check formatting + run tests](https://github.com/your-username/OptVault/actions/workflows/main.yml/badge.svg)](https://github.com/your-username/OptVault/actions/workflows/main.yml)
+[![Tests](https://github.com/vahidnourbakhsh/OptVault/actions/workflows/main.yml/badge.svg)](https://github.com/vahidnourbakhsh/OptVault/actions/workflows/main.yml)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Coverage](https://codecov.io/gh/vahidnourbakhsh/OptVault/branch/main/graph/badge.svg)](https://codecov.io/gh/vahidnourbakhsh/OptVault)
 
 ## About
 
