@@ -141,11 +141,13 @@ class DEAAnalyzer:
         model = create_dea_model()
 
         # Create data dictionary for the model with proper None key structure
-        data = {None: {
-            "Inputs": {None: list(input_data.index)},
-            "Outputs": {None: list(output_data.index)},
-            "Units": {None: unit_names},
-        }}
+        data = {
+            None: {
+                "Inputs": {None: list(input_data.index)},
+                "Outputs": {None: list(output_data.index)},
+                "Units": {None: unit_names},
+            }
+        }
 
         # Add input values
         data[None]["invalues"] = {}
@@ -160,7 +162,9 @@ class DEAAnalyzer:
                 data[None]["outvalues"][out, unit] = output_data.loc[out, unit]
 
         # Set target unit (1 for target, 0 for others)
-        data[None]["target"] = {unit: 1 if unit == target_unit else 0 for unit in unit_names}
+        data[None]["target"] = {
+            unit: 1 if unit == target_unit else 0 for unit in unit_names
+        }
 
         # Create instance and solve
         instance = model.create_instance(data)
