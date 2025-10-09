@@ -45,6 +45,8 @@ dev = [
     "black>=21.0.0",
     "flake8>=3.8.0",
     "mypy>=0.800",
+    "pre-commit>=3.0.0",
+    "isort>=5.0.0",
 ]
 solvers = [
     "ortools>=9.0.0",

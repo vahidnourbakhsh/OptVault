@@ -31,6 +31,9 @@ conda activate optvault
 
 # Install the package in development mode
 pip install -e .
+
+# Set up pre-commit hooks (for contributors)
+pre-commit install
 ```
 
 ### Using pip
@@ -141,18 +144,17 @@ normalized_data = normalize_data(data, method='minmax')
 
 ### Development Setup
 
+For contributors, set up pre-commit hooks to automatically format code and run checks:
+
 ```bash
 # Install development dependencies
 pip install -e ".[dev]"
 
-# Run tests
-pytest tests/
+# Install pre-commit hooks
+pre-commit install
 
-# Format code
-black src/ tests/ examples/
-
-# Check types
-mypy src/
+# Manually run all hooks (optional)
+pre-commit run --all-files
 ```
 
 ## Project Structure
