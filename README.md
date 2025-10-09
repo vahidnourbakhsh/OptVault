@@ -12,6 +12,7 @@
 - [Features](#features)
 - [Examples](#examples)
 - [Data Envelopment Analysis (DEA)](#data-envelopment-analysis-dea)
+- [Substitution Inventory Optimization](#substitution-inventory-optimization)
 - [Utilities](#utilities)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
@@ -54,9 +55,10 @@ pip install -e .
 ## Features
 
 - **Data Envelopment Analysis (DEA)**: Complete implementation for efficiency analysis
+- **Substitution Inventory Optimization**: Multi-item inventory models with customer substitution behavior
 - **Utility Functions**: Common optimization utilities and data processing tools
 - **Educational Examples**: Jupyter notebooks with step-by-step implementations
-- **Multiple Solvers**: Support for GLPK, OR-Tools, and other open-source solvers
+- **Multiple Solvers**: Support for GLPK, OR-Tools, PuLP, and other open-source solvers
 - **Well-tested**: Comprehensive test suite with CI/CD integration
 
 ## Examples
@@ -64,6 +66,7 @@ pip install -e .
 All examples are located in the `examples/` directory:
 
 - **`examples/dea/`** - Data Envelopment Analysis tutorials and implementations
+- **`examples/substitution/`** - Substitution-based inventory optimization examples
 
 ## Data Envelopment Analysis (DEA)
 
@@ -112,6 +115,52 @@ print(results)
 - **`examples/dea/dea.ipynb`** - Interactive tutorial with complete DEA workflow
 - **`examples/dea/dea.py`** - Python script implementation
 - **`examples/dea/data/`** - Sample datasets for testing
+
+## Substitution Inventory Optimization
+
+Multi-item inventory optimization that accounts for customer substitution behavior when primary items are out of stock.
+
+### 🛒 Business Problem
+
+In retail environments, customers often substitute one product for another when their preferred item is unavailable. This model optimizes inventory levels across multiple items while capturing:
+
+- **Customer substitution patterns** - Likelihood of accepting alternatives
+- **Cross-item demand interactions** - How stockouts affect sales of substitutes
+- **Service level optimization** - Maintaining availability while minimizing costs
+- **Operational constraints** - Order days, lead times, safety stock
+
+### 💻 Quick Start
+
+```python
+from optvault.subs import SubstitutionInventoryOptimizer
+
+# Define substitution relationships
+substitution_rates = {
+    ('product_A', 'product_B'): 0.6,  # 60% of A customers accept B
+    ('product_B', 'product_A'): 0.4,  # 40% of B customers accept A
+}
+
+# Create and solve model
+analyzer = SubstitutionInventoryOptimizer(
+    items=['product_A', 'product_B'],
+    days=7,
+    demand={'product_A': [100, 110, 120, 115, 105, 90, 80],
+            'product_B': [80, 85, 90, 88, 82, 70, 65]},
+    substitution_rates=substitution_rates,
+    costs={'product_A': 2.5, 'product_B': 3.0},
+    safety_stock={'product_A': 20, 'product_B': 15},
+    order_days=[1, 1, 1, 1, 1, 0, 0]  # No weekend orders
+)
+
+results = analyzer.solve()
+analyzer.print_results()
+```
+
+### 📖 Detailed Examples
+
+- **`examples/substitution/substitution_example.py`** - Comprehensive examples with sensitivity analysis
+- **`docs/substitution-inventory-model.md`** - Complete mathematical formulation
+- **`tests/examples/test_substitution.py`** - Test cases and validation
 
 ## Utilities
 
@@ -163,6 +212,7 @@ pre-commit run --all-files
 OptVault/
 ├── src/optvault/           # Main package source code
 │   ├── dea/               # Data Envelopment Analysis
+│   ├── subs/               # Substitution Inventory Optimization
 │   ├── utilities/         # Common utilities
 │   └── __init__.py
 ├── tests/                 # Test suite

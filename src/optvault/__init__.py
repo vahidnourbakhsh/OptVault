@@ -9,6 +9,7 @@ __version__ = "0.1.0"
 __author__ = "OptVault Contributors"
 
 from .dea import TOLERANCE, DEAAnalyzer, create_dea_model
+from .subs import SubstitutionInventoryOptimizer, create_sample_model
 from .utilities import (
     calculate_summary_stats,
     load_data_from_file,
@@ -28,4 +29,6 @@ __all__ = [
     "create_dea_model",
     "DEAAnalyzer",
     "TOLERANCE",
+    "SubstitutionInventoryOptimizer",
+    "create_sample_model",
 ]
