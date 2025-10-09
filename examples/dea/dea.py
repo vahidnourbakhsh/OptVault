@@ -1,16 +1,16 @@
 from pyomo.environ import (
     AbstractModel,
-    Set,
-    Param,
-    Var,
-    Objective,
-    Constraint,
-    PositiveReals,
-    NonNegativeReals,
     Binary,
-    maximize,
-    inequality,
+    Constraint,
+    NonNegativeReals,
+    Objective,
+    Param,
+    PositiveReals,
+    Set,
     SolverFactory,
+    Var,
+    inequality,
+    maximize,
 )
 
 TOLERANCE = 0.01  # feasibility tolerance for the normalization constraint below

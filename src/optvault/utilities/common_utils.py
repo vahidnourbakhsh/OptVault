@@ -1,10 +1,10 @@
 """Common utility functions for OptVault optimization projects."""
 
-import pandas as pd
-import numpy as np
-from typing import List, Dict, Any, Union, Optional
 import logging
+from typing import Any, Dict, List, Optional, Union
 
+import numpy as np
+import pandas as pd
 
 __all__ = [
     "setup_logging",

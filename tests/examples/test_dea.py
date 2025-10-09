@@ -1,14 +1,15 @@
 """Test DEA (Data Envelopment Analysis) models and utilities."""
 
-import pytest
-import pandas as pd
-import sys
 import os
+import sys
+
+import pandas as pd
+import pytest
 
 # Add src to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from optvault.dea import create_dea_model, DEAAnalyzer
+from optvault.dea import DEAAnalyzer, create_dea_model
 
 
 @pytest.fixture

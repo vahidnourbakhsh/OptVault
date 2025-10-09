@@ -89,15 +89,15 @@ input_data = pd.DataFrame({
 
 output_data = pd.DataFrame({
     'DMU1': [1, 2],  # outputs for DMU1
-    'DMU2': [2, 1],  # outputs for DMU2  
+    'DMU2': [2, 1],  # outputs for DMU2
     'DMU3': [1, 1],  # outputs for DMU3
 }, index=['Output1', 'Output2'])
 
 # Run DEA analysis
 analyzer = DEAAnalyzer(solver_name='glpk')
 results = analyzer.analyze_efficiency(
-    input_data, 
-    output_data, 
+    input_data,
+    output_data,
     ['DMU1', 'DMU2', 'DMU3']
 )
 

@@ -46,10 +46,10 @@ Thank you for your interest in contributing to OptVault! This document provides 
    ```bash
    # Run tests
    pytest tests/
-   
+
    # Format code
    black src/ tests/ examples/
-   
+
    # Check types (optional)
    mypy src/
    ```
@@ -82,16 +82,16 @@ def calculate_efficiency(
     solver_name: str = "glpk"
 ) -> float:
     """Calculate efficiency score for a target DMU using DEA.
-    
+
     Args:
         input_values: DataFrame with input data for all DMUs
         output_values: DataFrame with output data for all DMUs
         target_unit: Name of the DMU to analyze
         solver_name: Name of the optimization solver to use
-        
+
     Returns:
         Efficiency score between 0 and 1
-        
+
     Raises:
         ValueError: If target_unit is not found in the data
     """

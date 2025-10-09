@@ -8,15 +8,15 @@ transportation problems, and performance analysis.
 __version__ = "0.1.0"
 __author__ = "OptVault Contributors"
 
+from .dea import TOLERANCE, DEAAnalyzer, create_dea_model
 from .utilities import (
+    calculate_summary_stats,
+    load_data_from_file,
+    normalize_data,
+    save_results,
     setup_logging,
     validate_data,
-    load_data_from_file,
-    save_results,
-    calculate_summary_stats,
-    normalize_data,
 )
-from .dea import create_dea_model, DEAAnalyzer, TOLERANCE
 
 __all__ = [
     "setup_logging",

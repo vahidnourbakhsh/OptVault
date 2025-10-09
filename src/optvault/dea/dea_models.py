@@ -5,24 +5,24 @@ DEA is a method used for measuring and comparing performance of different units,
 usually called Decision Making Units (DMUs).
 """
 
-from pyomo.environ import (
-    AbstractModel,
-    Set,
-    Param,
-    Var,
-    Objective,
-    Constraint,
-    PositiveReals,
-    NonNegativeReals,
-    Binary,
-    maximize,
-    inequality,
-    SolverFactory,
-    value,
-)
-import pandas as pd
 from typing import List
 
+import pandas as pd
+from pyomo.environ import (
+    AbstractModel,
+    Binary,
+    Constraint,
+    NonNegativeReals,
+    Objective,
+    Param,
+    PositiveReals,
+    Set,
+    SolverFactory,
+    Var,
+    inequality,
+    maximize,
+    value,
+)
 
 __all__ = ["create_dea_model", "DEAAnalyzer", "TOLERANCE"]
 
@@ -104,7 +104,8 @@ class DEAAnalyzer:
 
         Args:
             input_data: DataFrame with input values (units as columns, inputs as rows)
-            output_data: DataFrame with output values (units as columns, outputs as rows)
+            output_data: DataFrame with output values (units as columns,
+                outputs as rows)
             unit_names: List of unit names to analyze
 
         Returns:
@@ -174,5 +175,6 @@ class DEAAnalyzer:
             return value(instance.efficiency)
         else:
             raise RuntimeError(
-                f"Solver failed for unit {target_unit}: {results.solver.termination_condition}"
+                f"Solver failed for unit {target_unit}: "
+                f"{results.solver.termination_condition}"
             )

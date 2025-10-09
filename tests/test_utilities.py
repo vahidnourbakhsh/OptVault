@@ -1,20 +1,21 @@
 """Test utility functions for OptVault."""
 
-import pytest
-import pandas as pd
-import tempfile
 import os
 import sys
+import tempfile
+
+import pandas as pd
+import pytest
 
 # Add src to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from optvault.utilities import (
-    validate_data,
-    load_data_from_file,
-    save_results,
     calculate_summary_stats,
+    load_data_from_file,
     normalize_data,
+    save_results,
+    validate_data,
 )
 
 
