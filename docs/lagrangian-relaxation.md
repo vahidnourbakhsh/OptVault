@@ -1,16 +1,6 @@
 # Lagrangian Relaxation
 
-This document explains how we can solve a classic transportation problem using Lagrangian Relaxation (LR) technique. This is the core insight for deriving the subgradient: For each destination $j$, the $j$-th component of the subgradient is the total amount of goods shipped to that destination minus its required demand.
-
-- If the demand constraint for destination $j$ is met perfectly, the subgradient component $g_j^k$ is zero.
-- If destination $j$ has excess supply, $g_j^k > 0$, and the multiplier $\lambda_j$ should be increased (since the dual is being maximized).
-- If destination $j$ has an unmet demand, $g_j^k < 0$, and the multiplier $\lambda_j$ should be decreased.
-
-#### Updating the multipliers
-
-In the subgradient method, the multipliers are updated iteratively in the direction of the subgradient. Because we are maximizing the dual function, we take a step in the positive direction of the subgradient. The update rule is:
-
-$$\lambda_j^{k+1} = \lambda_j^k + \alpha^k \cdot g_j^k$$he purpose of this document is to demonstrate how to decompose a constrained optimization problem into a series of simpler, unconstrained subproblems. We also include a python implementation of LR.
+This document explains how we can solve a classic transportation problem using Lagrangian Relaxation (LR) technique. The purpose of the LR technique is to decompose a constrained optimization problem into a series of simpler, unconstrained subproblems.
 
 ## Overview
 
@@ -355,3 +345,55 @@ This example illustrates:
 - How the subproblem solution depends on the multipliers
 - How the subgradient, which represents the constraint violation, guides the update of the multipliers
 - The fact that the primal solution ($x$) is not necessarily feasible during the intermediate steps
+
+### Connection between the subgradient and the dual function
+
+The subgradient of the dual function is directly derived from the solution to the Lagrangian subproblem. For the transportation problem, this connection can be explained through two complementary perspectives: the formal mathematical definition and a more intuitive economic interpretation. 
+
+#### Formal mathematical connection
+
+**The dual function $L(\lambda)$:** In Lagrangian relaxation, we form the dual function $L(\lambda )$ by minimizing the Lagrangian over the "easy" constraints. For our transportation example, with demand constraints relaxed:
+
+$$L(\lambda)=\min_{x\ge 0,\sum _{j}x_{ij}\le s_{i}}\left\{\sum _{i,j}c_{ij}x_{ij}+\sum _{j}\lambda _{j}\left(\sum _{i}x_{ij}-d_{j}\right)\right\}$$
+
+**The subgradient definition:** For a concave function like $L(\lambda)$, a subgradient $g$ at a point $\lambda$ is any vector that satisfies the inequality:
+
+$$L(\bar{\lambda}) \leq L(\lambda) + g^T(\bar{\lambda} - \lambda) \text{ for all } \bar{\lambda}$$
+
+This means the affine function $L(\lambda) + g^T(\bar{\lambda} - \lambda)$ lies above the function $L(\bar{\lambda})$.
+
+**The key result:** It can be proven that the subgradient vector $g$ of the dual function $L(\lambda)$ at a point $\lambda^k$ is given by the vector of constraint violations at the optimal solution $x^k$ of the Lagrangian subproblem for $\lambda^k$.
+
+Let $x^k$ be an optimal solution to the subproblem $\min_{x \in X} L(x, \lambda^k)$.
+
+The dual function can be written as $L(\lambda) = \min_{x \in X}(c^T x + \lambda^T(Ax - b))$.
+
+The subgradient is then derived from the terms related to $\lambda$: $\nabla_{\lambda} L(\lambda) = Ax - b$.
+
+For our specific transportation problem, the constraint is $\sum_i x_{ij} = d_j$. The $j$-th component of the subgradient is:
+
+$$g_j^k = \sum_{i=1}^m x_{ij}^k - d_j$$ 
+
+#### Intuitive economic interpretation
+The subgradient provides a powerful economic interpretation of the dual variables, or shadow prices, that guide the optimization process. 
+
+**Lagrange multipliers as prices:** In the context of the transportation problem, the Lagrange multipliers $\lambda _{j}$ can be thought of as prices or tolls associated with the demand constraints at each destination $j$.
+
+**The subproblem response:** When the multipliers are set, each source independently solves its own subproblem. It is trying to maximize its profit or minimize its cost given the costs $c_{ij}$ and the "prices" $\lambda_{j}$ for shipping to each destination.
+
+**Subgradient as excess demand/supply:** The subgradient vector $g_{j}^{k}$ measures the difference between the total amount of goods shipped to destination $j$ and its demand.
+
+- If $g_{j}^{k}>0$ (excess supply), it means the current price $\lambda_{j}$ is too high, attracting more goods than needed. The subgradient update $\lambda_{j}^{k+1}=\lambda_{j}^{k}+\alpha ^{k}g_{j}^{k}$ will increase the price, effectively discouraging sources from shipping to that destination in the next iteration.
+
+- If $g_{j}^{k}<0$ (unmet demand), the current price $\lambda_{j}$ is too low. The update will decrease the penalty (or make the "reward" more attractive), encouraging sources to ship more goods to that destination.
+
+**Toward equilibrium:** The subgradient method uses this feedback loop to adjust the prices (multipliers) toward a state of market equilibrium where supply meets demand. When the subgradient is close to zero, it signifies that the demands are being met and the dual solution is stabilizing.
+
+#### Practical benefits of this connection
+
+**Decomposition:**
+The core of Lagrangian relaxation is that the subgradient calculation can be decomposed. Each subproblem (for each source in our example) can be solved independently, and their results are "gathered" to form the full subgradient. This allows for efficient parallel computation for large-scale problems.
+
+**Guidance for the primal problem:** Even though the primal solution $x^{k}$ from the subproblem may not be feasible for the original problem, the dual information derived from the subgradient guides the search for better feasible solutions. A good dual solution with an acceptable duality gap implies the optimal primal solution is not far away.
+
+**Handling non-differentiability:** The ability to use a subgradient rather than a gradient is crucial for problems where the dual function is non-differentiable. This occurs at points where multiple solutions to the subproblem exist. The subgradient method naturally handles these "kinks" in the dual function, unlike standard gradient ascent methods.
