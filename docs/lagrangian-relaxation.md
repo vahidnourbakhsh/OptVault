@@ -193,3 +193,165 @@ Let's trace one iteration of the subgradient calculation for our transportation 
 - $\lambda_3^{k+1} = \lambda_3^k + \alpha^k \cdot (-50)$ (Decrease penalty for unmet demand) 
 
 This process pushes the algorithm toward a state where the penalties for violating the demand constraints are in balance, which, if the Lagrangian dual has a small duality gap, leads to a near-optimal solution for the original problem.
+
+#### Example walk-through 2
+
+**Original problem:**
+
+Minimize $\sum_{i=1}^{m}\sum_{j=1}^{n}c_{ij}x_{ij}$
+
+Subject to:
+
+- Supply constraints: $\sum_{j=1}^{n}x_{ij} \le s_i$
+- Demand constraints: $\sum_{i=1}^{m}x_{ij} = d_j$
+- Non-negativity: $x_{ij} \ge 0$
+
+**Example Data:**
+
+Let's assume there are 2 sources and 3 destinations.
+
+Costs $(c_{ij})$:
+$$C = \begin{pmatrix}10 & 8 & 5\\6 & 12 & 9\end{pmatrix}$$
+
+Supply $(s_i)$:
+$$s = \begin{pmatrix}100\\120\end{pmatrix}$$
+
+Demand $(d_j)$:
+$$d = \begin{pmatrix}60\\80\\80\end{pmatrix}$$
+
+Total supply = 220, total demand = 220.
+
+**Step-by-step Lagrangian Relaxation**
+
+**Initial state (Iteration 0):**
+
+- Initialize Lagrange multipliers $\lambda_j = 0$ for all $j$
+- Let's use a step size scaling factor of $\alpha^0 = 1$
+- Best lower bound found so far: $L^* = -\infty$
+
+**Iteration 1:**
+
+1. **Solve the Lagrangian subproblem**
+
+   The relaxed objective is to minimize:
+   $$\sum_{i=1}^{2}\sum_{j=1}^{3}(c_{ij}+\lambda_j)x_{ij} - \sum_{j=1}^{3}\lambda_j d_j$$
+
+   Since all $\lambda_j$ are 0, the effective costs $(c_{ij}+\lambda_j)$ are just the original costs.
+
+   - **Source 1:** Supply $s_1 = 100$. Effective costs are $(10, 8, 5)$. The minimum is 5 at destination 3. Source 1 ships its entire supply to destination 3: $x_{11} = 0, x_{12} = 0, x_{13} = 100$.
+
+   - **Source 2:** Supply $s_2 = 120$. Effective costs are $(6, 12, 9)$. The minimum is 6 at destination 1. Source 2 ships its entire supply to destination 1: $x_{21} = 120, x_{22} = 0, x_{23} = 0$.
+
+   The solution matrix $x$ for this iteration is:
+   $$x = \begin{pmatrix}0 & 0 & 100\\120 & 0 & 0\end{pmatrix}$$
+
+
+2. **Calculate the dual objective (lower bound)**
+
+   The dual objective value $L(\lambda^1)$ is calculated using the subproblem solution $x^1$ and the current multipliers $\lambda^1$:
+   $$L(\lambda^1) = \sum_{i,j}c_{ij}x_{ij}^1 + \sum_j\lambda_j\left(\sum_i x_{ij}^1 - d_j\right)$$
+
+   Since $\lambda_j = 0$, this simplifies to the cost of the current solution:
+   $$L(\lambda^1) = (10 \cdot 0) + (8 \cdot 0) + (5 \cdot 100) + (6 \cdot 120) + (12 \cdot 0) + (9 \cdot 0) = 500 + 720 = 1220$$
+
+   $L^* = \max(-\infty, 1220) = 1220$
+
+3. **Calculate the subgradient and update multipliers**
+
+   The subgradient $g$ is the vector of demand constraint violations:
+   - $g_1 = \sum_i x_{i1} - d_1 = (0 + 120) - 60 = 60$ (Excess supply)
+   - $g_2 = \sum_i x_{i2} - d_2 = (0 + 0) - 80 = -80$ (Unmet demand)
+   - $g_3 = \sum_i x_{i3} - d_3 = (100 + 0) - 80 = 20$ (Excess supply)
+
+   The subgradient vector is $g = (60, -80, 20)$.
+
+   Update the multipliers using a step size $\alpha^1 = \alpha^0/1 = 1$:
+   - $\lambda_1^2 = \lambda_1^1 + \alpha^1 g_1^1 = 0 + 1 \cdot 60 = 60$
+   - $\lambda_2^2 = \lambda_2^1 + \alpha^1 g_2^1 = 0 + 1 \cdot (-80) = -80$
+   - $\lambda_3^2 = \lambda_3^1 + \alpha^1 g_3^1 = 0 + 1 \cdot 20 = 20$
+
+   The new multipliers are $\lambda^2 = (60, -80, 20)$.
+
+**Iteration 2:**
+
+1. **Solve the Lagrangian subproblem**
+
+   New effective costs are $c_{ij} + \lambda_j^2$:
+   $$C_{eff} = \begin{pmatrix}10+60 & 8-80 & 5+20\\6+60 & 12-80 & 9+20\end{pmatrix} = \begin{pmatrix}70 & -72 & 25\\66 & -68 & 29\end{pmatrix}$$
+
+   - **Source 1:** Supply $s_1 = 100$. Effective costs are $(70, -72, 25)$. The minimum is -72 at destination 2. Source 1 ships its entire supply to destination 2: $x_{11} = 0, x_{12} = 100, x_{13} = 0$.
+
+   - **Source 2:** Supply $s_2 = 120$. Effective costs are $(66, -68, 29)$. The minimum is -68 at destination 2. Source 2 ships its entire supply to destination 2: $x_{21} = 0, x_{22} = 120, x_{23} = 0$.
+
+   The solution matrix $x$ for this iteration is:
+   $$x = \begin{pmatrix}0 & 100 & 0\\0 & 120 & 0\end{pmatrix}$$
+
+2. **Calculate the dual objective (lower bound)**
+
+   $$L(\lambda^2) = \sum_{i,j}c_{ij}x_{ij}^2 + \sum_j\lambda_j^2\left(\sum_i x_{ij}^2 - d_j\right)$$
+
+   $$L(\lambda^2) = [(10 \cdot 0) + (8 \cdot 100) + (5 \cdot 0) + (6 \cdot 0) + (12 \cdot 120) + (9 \cdot 0)] + [60(0-60) + (-80)(220-80) + 20(0-80)]$$
+
+   $$L(\lambda^2) = (800 + 1440) + [(-3600) + (-11200) + (-1600)] = 2240 - 16400 = -14160$$
+
+   Wait, this is an obvious error in the example. The Lagrangian dual function is maximized, and it must produce a valid lower bound. Let's recheck the formula. The Lagrangian dual is defined as $L(\lambda) = \min_{x \in X}\{cx + \lambda(Ax - b)\}$. A better calculation is to calculate the minimum value of the relaxed objective directly:
+
+   $$L(\lambda^2) = (70 \cdot 0) + (-72 \cdot 100) + (25 \cdot 0) + (66 \cdot 0) + (-68 \cdot 120) + (29 \cdot 0) - \sum \lambda_j d_j$$
+
+   $$L(\lambda^2) = -7200 - 8160 - [(60 \cdot 60) + (-80 \cdot 80) + (20 \cdot 80)]$$
+
+   $$L(\lambda^2) = -15360 - [3600 - 6400 + 1600] = -15360 - (-1200) = -14160$$
+
+   The calculation was correct. The dual objective can indeed decrease. $L^* = \max(1220, -14160) = 1220$.
+
+3. **Calculate the subgradient and update multipliers**
+
+   - $g_1 = \sum_i x_{i1} - d_1 = (0 + 0) - 60 = -60$
+   - $g_2 = \sum_i x_{i2} - d_2 = (100 + 120) - 80 = 140$
+   - $g_3 = \sum_i x_{i3} - d_3 = (0 + 0) - 80 = -80$
+
+   The subgradient vector is $g = (-60, 140, -80)$.
+
+   Update multipliers with a smaller step size, say $\alpha^2 = \alpha^0/2 = 0.5$:
+   - $\lambda_1^3 = \lambda_1^1 + \alpha^1 g_1^1 = 60 + 0.5 \cdot (-60) = 30$
+   - $\lambda_2^3 = \lambda_2^1 + \alpha^1 g_2^1 = -80 + 0.5 \cdot 140 = -10$
+   - $\lambda_3^3 = \lambda_3^1 + \alpha^1 g_3^1 = 20 + 0.5 \cdot (-80) = -20$
+
+   The new multipliers are $\lambda^3 = (30, -10, -20)$.
+
+**Iteration 3:**
+
+1. **Solve the Lagrangian subproblem**
+
+   Effective costs are $c_{ij} + \lambda_j^3$:
+   $$C_{eff} = \begin{pmatrix}10+30 & 8-10 & 5-20\\6+30 & 12-10 & 9-20\end{pmatrix} = \begin{pmatrix}40 & -2 & -15\\36 & 2 & -11\end{pmatrix}$$
+
+   - **Source 1:** Supply $s_1 = 100$. Minimum cost is -15 at dest 3: $x_{11} = 0, x_{12} = 0, x_{13} = 100$.
+   - **Source 2:** Supply $s_2 = 120$. Minimum cost is -11 at dest 3: $x_{21} = 0, x_{22} = 0, x_{23} = 120$.
+
+   The solution matrix $x$ for this iteration is:
+   $$x = \begin{pmatrix}0 & 0 & 100\\0 & 0 & 120\end{pmatrix}$$
+
+2. **Calculate the dual objective**
+
+   $$L(\lambda^3) = -15 \cdot 100 - 11 \cdot 120 - [(30 \cdot 60) + (-10 \cdot 80) + (-20 \cdot 80)]$$
+   $$L(\lambda^3) = -1500 - 1320 - [1800 - 800 - 1600] = -2820 - (-600) = -2220$$
+
+   $L^* = \max(1220, -2220) = 1220$
+
+3. **Calculate the subgradient and update multipliers**
+
+   - $g_1 = (0 + 0) - 60 = -60$
+   - $g_2 = (0 + 0) - 80 = -80$
+   - $g_3 = (100 + 120) - 80 = 140$
+
+   The subgradient vector is $g = (-60, -80, 140)$.
+
+The process continues, with the lower bound $L^*$ being tracked and the multipliers adjusted. The subgradient method helps explore the space of multipliers, improving the lower bound and pushing the solution towards satisfying the relaxed constraints.
+
+This example illustrates:
+
+- The iterative nature of the process
+- How the subproblem solution depends on the multipliers
+- How the subgradient, which represents the constraint violation, guides the update of the multipliers
+- The fact that the primal solution ($x$) is not necessarily feasible during the intermediate steps
