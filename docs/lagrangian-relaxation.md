@@ -372,9 +372,10 @@ The subgradient is then derived from the terms related to $\lambda$: $\nabla_{\l
 
 For our specific transportation problem, the constraint is $\sum_i x_{ij} = d_j$. The $j$-th component of the subgradient is:
 
-$$g_j^k = \sum_{i=1}^m x_{ij}^k - d_j$$ 
+$$g_j^k = \sum_{i=1}^m x_{ij}^k - d_j$$
 
 #### Intuitive economic interpretation
+
 The subgradient provides a powerful economic interpretation of the dual variables, or shadow prices, that guide the optimization process. 
 
 **Lagrange multipliers as prices:** In the context of the transportation problem, the Lagrange multipliers $\lambda _{j}$ can be thought of as prices or tolls associated with the demand constraints at each destination $j$.
