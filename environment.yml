@@ -90,7 +90,7 @@ dependencies:
   - pure_eval=0.2.2
   - pycparser=2.21
   - pygments=2.15.1
-  - pyomo=6.6.1
+  - pyomo>=6.9.0
   - pyrsistent=0.19.3
   - pysocks=1.7.1
   - pytest=7.4.0
