@@ -141,7 +141,7 @@ $$g_j^k = \sum_{i=1}^{m}x_{ij}^k - d_j$$
 
 This is the core insight for deriving the subgradient: For each destination $j$, the $j$-th component of the subgradient is the total amount of goods shipped to that destination minus its required demand. If the demand constraint for destination $j$ is met perfectly, the subgradient component $g_{j}^{k}$ is zero.
 
-If destination $j$ has excess supply, $g_{j}^{k}>0$, and the multiplier $\lambda _{j}$ should be increased (since the dual is being maximized). If destination $j$ has an unmet demand, $g_{j}^{k}<0$, and the multiplier $\lambda _{j}$ should be decreased.
+If destination $j$ has excess supply, $g_{j}^{k}>0$, and the multiplier $\lambda_{j}$ should be increased (since the dual is being maximized). If destination $j$ has an unmet demand, $g_{j}^{k}<0$, and the multiplier $\lambda_{j}$ should be decreased.
 
 #### Updating the multipliers
 
