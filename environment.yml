@@ -3,8 +3,6 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - _libgcc_mutex=0.1
-  - _openmp_mutex=4.5
   - anyio=3.7.0
   - argon2-cffi=21.3.0
   - argon2-cffi-bindings=21.2.0
@@ -56,11 +54,8 @@ dependencies:
   - jupyterlab=4.0.2
   - jupyterlab_pygments=0.2.2
   - jupyterlab_server=2.23.0
-  - ld_impl_linux-64=2.38
   - libffi=3.4.4
-  - libgcc-ng=13.1.0
   - libsodium=1.0.18
-  - libstdcxx-ng=13.1.0
   - llvm-openmp=14.0.6
   - markupsafe=2.1.3
   - matplotlib
@@ -99,11 +94,10 @@ dependencies:
   - pyrsistent=0.19.3
   - pysocks=1.7.1
   - pytest=7.4.0
-  - python=3.9.16
+  - python=3.10
   - python-dateutil=2.8.2
   - python-fastjsonschema=2.17.1
   - python-json-logger=2.0.7
-  - python_abi=3.9
   - pytz=2023.3
   - pyyaml=6.0
   - pyzmq=25.1.0
