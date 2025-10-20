@@ -289,13 +289,12 @@ Total supply = 220, total demand = 220.
 
     New effective costs are $c_{ij} + \lambda_j^2$:
 
-    $$C_{eff} = \begin{pmatrix}
-    10+60 & 8-80 & 5+20 \\
-    6+60 & 12-80 & 9+20
-    \end{pmatrix} = \begin{pmatrix}
-    70 & -72 & 25 \\
-    66 & -68 & 29
-    \end{pmatrix}$$
+    With $\lambda^2 = (60, -80, 20)$, we get:
+
+$$C_{eff} = \begin{pmatrix}
+70 & -72 & 25 \\
+66 & -68 & 29
+\end{pmatrix}$$
 
     - **Source 1:** Supply $s_1 = 100$. Effective costs are $(70, -72, 25)$. The minimum is -72 at destination 2. Source 1 ships its entire supply to destination 2: $x_{11} = 0, x_{12} = 100, x_{13} = 0$.
     - **Source 2:** Supply $s_2 = 120$. Effective costs are $(66, -68, 29)$. The minimum is -68 at destination 2. Source 2 ships its entire supply to destination 2: $x_{21} = 0, x_{22} = 120, x_{23} = 0$.
@@ -342,13 +341,12 @@ Total supply = 220, total demand = 220.
 
     Effective costs are $c_{ij} + \lambda_j^3$:
 
-    $$C_{eff} = \begin{pmatrix}
-    10+30 & 8-10 & 5-20 \\
-    6+30 & 12-10 & 9-20
-    \end{pmatrix} = \begin{pmatrix}
-    40 & -2 & -15 \\
-    36 & 2 & -11
-    \end{pmatrix}$$
+    With $\lambda^3 = (30, -10, -20)$, we get:
+
+$$C_{eff} = \begin{pmatrix}
+40 & -2 & -15 \\
+36 & 2 & -11
+\end{pmatrix}$$
 
     - **Source 1:** Supply $s_1 = 100$. Minimum cost is -15 at dest 3: $x_{11} = 0, x_{12} = 0, x_{13} = 100$.
     - **Source 2:** Supply $s_2 = 120$. Minimum cost is -11 at dest 3: $x_{21} = 0, x_{22} = 0, x_{23} = 120$.
