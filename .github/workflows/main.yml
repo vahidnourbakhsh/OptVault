@@ -30,10 +30,15 @@ jobs:
       run: |
         conda install -c conda-forge glpk
 
-    - name: Install Python dependencies
+    - name: Install dependencies from environment.yml
       shell: bash -l {0}
       run: |
-        pip install -e ".[dev]"
+        conda env update --file environment.yml --name base
+
+    - name: Install package in development mode
+      shell: bash -l {0}
+      run: |
+        pip install -e . --no-deps
 
     - name: Verify GLPK installation
       shell: bash -l {0}
