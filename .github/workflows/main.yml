@@ -25,11 +25,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
         channels: conda-forge,defaults
 
-    - name: Install GLPK solver
-      shell: bash -l {0}
-      run: |
-        conda install -c conda-forge glpk
-
     - name: Install dependencies from environment.yml
       shell: bash -l {0}
       run: |
