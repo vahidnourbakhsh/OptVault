@@ -313,12 +313,14 @@ Total supply = 220, total demand = 220.
 1. **Solve the Lagrangian subproblem**
 
     Effective costs are $c_{ij} + \lambda_j^3$:
+
     $$C_{eff} = \begin{pmatrix}10+30 & 8-10 & 5-20\\6+30 & 12-10 & 9-20\end{pmatrix} = \begin{pmatrix}40 & -2 & -15\\36 & 2 & -11\end{pmatrix}$$
 
     - **Source 1:** Supply $s_1 = 100$. Minimum cost is -15 at dest 3: $x_{11} = 0, x_{12} = 0, x_{13} = 100$.
     - **Source 2:** Supply $s_2 = 120$. Minimum cost is -11 at dest 3: $x_{21} = 0, x_{22} = 0, x_{23} = 120$.
 
     The solution matrix $x$ for this iteration is:
+
     $$x = \begin{pmatrix}0 & 0 & 100\\0 & 0 & 120\end{pmatrix}$$
 
 2. **Calculate the dual objective**
