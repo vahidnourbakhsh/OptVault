@@ -59,13 +59,13 @@ We apply Lagrangian relaxation to solve this problem, specifically by relaxing t
 
 We move the "hard" demand constraints into the objective function, penalizing their violation with Lagrange multipliers $\lambda_j$. The new objective is:
 
-$$\min \left\{\sum_{i=1}^{m}\sum_{j=1}^{n}c_{ij}x_{ij}+\sum_{j=1}^{n}\lambda_j\left(\sum_{i=1}^{m}x_{ij}-d_j\right)\right\}$$
+$$\min \sum_{i=1}^{m}\sum_{j=1}^{n}c_{ij}x_{ij}+\sum_{j=1}^{n}\lambda_j\left(\sum_{i=1}^{m}x_{ij}-d_j\right)$$
 
 Subject to the remaining (easy) supply and non-negativity constraints.
 
 This expression can be rearranged to reveal the separable structure of the modified program which makes it easy to solve:
 
-$$\min \left\{\sum_{i=1}^{m}\sum_{j=1}^{n}(c_{ij}+\lambda_j)x_{ij}-\sum_{j=1}^{n}\lambda_j d_j\right\}$$
+$$\min \sum_{i=1}^{m}\sum_{j=1}^{n}(c_{ij}+\lambda_j)x_{ij}-\sum_{j=1}^{n}\lambda_j d_j$$
 
 The minimization can be decomposed into $m$ independent subproblems, one for each source $i$.
 
@@ -353,7 +353,7 @@ The subgradient of the dual function is directly derived from the solution to th
 
 **The dual function $L(\lambda)$:** In Lagrangian relaxation, we form the dual function $L(\lambda)$ by minimizing the Lagrangian over the "easy" constraints. For our transportation example, with demand constraints relaxed:
 
-$$L(\lambda)=\min_{x\ge 0,\sum _{j}x_{ij}\le s_{i}}\left\{\sum _{i,j}c_{ij}x_{ij}+\sum _{j}\lambda _{j}\left(\sum _{i}x_{ij}-d_{j}\right)\right\}$$
+$$L(\lambda)=\min_{x\ge 0,\sum _{j}x_{ij}\le s_{i}} \sum _{i,j}c_{ij}x_{ij}+\sum _{j}\lambda _{j}\left(\sum _{i}x_{ij}-d_{j}\right)$$
 
 **The subgradient definition:** For a concave function like $L(\lambda)$, a subgradient $g$ at a point $\lambda$ is any vector that satisfies the inequality:
 
