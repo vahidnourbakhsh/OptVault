@@ -25,29 +25,33 @@ jobs:
         python-version: ${{ matrix.python-version }}
         channels: conda-forge,defaults
 
-    - name: Install dependencies from environment.yml
+    - name: Create conda environment from environment.yml
       shell: bash -l {0}
       run: |
-        conda env update --file environment.yml --name base
+        conda env create -f environment.yml
 
-    - name: Install package in development mode
+    - name: Activate environment and install package in development mode
       shell: bash -l {0}
       run: |
+        conda activate optvault
         pip install -e . --no-deps
 
     - name: Verify GLPK installation
       shell: bash -l {0}
       run: |
+        conda activate optvault
         python -c "import subprocess; print('GLPK version:', subprocess.run(['glpsol', '--version'], capture_output=True, text=True).stdout.split()[0] if subprocess.run(['glpsol', '--version'], capture_output=True, text=True).returncode == 0 else 'Not found')"
 
     - name: Format check with Black
       shell: bash -l {0}
       run: |
+        conda activate optvault
         black --check --verbose src/ tests/
 
     - name: Test with pytest and coverage
       shell: bash -l {0}
       run: |
+        conda activate optvault
         pytest tests/ -v --tb=short --cov=src/optvault --cov-report=xml --cov-report=term
 
     - name: Upload coverage to Codecov
@@ -61,4 +65,5 @@ jobs:
     - name: Check package installation
       shell: bash -l {0}
       run: |
+        conda activate optvault
         python -c "import optvault; print('OptVault version:', optvault.__version__)"
